@@ -44,6 +44,11 @@
   <script src="js/resumeBuilder.js"></script>
 
   <script>
+    function safeString(str) {
+        str = str.replace(/</g, "&lt;");
+        str = str.replace(/>/g, "&gt;");
+        return str;
+    }
     var bio = {
         "name": "Andrew Millar",
         "role": "Front-end Developer",
@@ -54,9 +59,69 @@
             "email": "andrew@millar-knorr.nl", 
             "mobile": "06 39885707"
         },
-        "welcomeMessage": "Hi there this is an awesome resume you are looking at, don't you think?"
-    }, 
-        formattedName = HTMLheaderName.replace("%data%", bio.name),
+        "welcomeMessage": "Hi there this is an awesome resume you are looking at, don't you think?",
+        "education": education,
+        "work": work
+    }; 
+    var education = {
+        "schools": [
+            {
+                "name": "Royal University Groningen",
+                "city":"Groningen",
+                "year": "2005",
+                "digree": "BA",
+                "majors": "biology",
+            },
+            {
+                "name":"Royal University Groningen",
+                "city":"Groningen",
+                "year":"2008",
+                "digree": "Ms",
+                "minor":"philosophy of science",
+                "major":"Molecular Biology"
+            }
+        ],
+        "courses": [
+            {
+                "name":"Coursera",
+                "course":"Some course name",
+                "language":"Python",
+                "date":"2012 - 2013",
+            },{
+                "name":"Coursera",
+                "course":"Begining of meteorJS",
+                "language":["Javascript", "bootstrap", "html", "css"],
+                "date":"2015",
+            }
+        ]
+    };
+    var work = {
+        "jobs": [
+            {
+                "employer":"nameEmployer1",
+                "title":"title1",
+                "dates":"2010 - 2015",
+                "description":"description1",
+            },{
+                "employer":"nameEmployer2",
+                "title":"title2",
+                "dates":"2000 - 2010",
+                "description":"description2",
+            }
+        ]
+    };
+
+    
+    for (job in work.jobs) {
+      $('#workExperience').append(HTMLworkStart);
+      var employerTitle = HTMLworkEmployer.replace("%data%", work.jobs[job].employer)+
+                          HTMLworkTitle.replace("%data%", work.jobs[job].title);
+      var dateElem = HTMLworkDates.replace("%data%", work.jobs[job].dates);
+      var descriptionElem = HTMLworkDescription.replace("%data%", work.jobs[job].description);
+      $('.work-entry:last').append(employerTitle).append(dateElem).append(descriptionElem);
+    }
+
+    var formattedName = HTMLheaderName.replace("%data%", bio.name),
         formattedRole = HTMLheaderRole.replace("%data%", bio.role),
         formattedContact = HTMLcontactGeneric.replace("%data%", bio.contact);
 
@@ -65,10 +130,12 @@
     $("#header").after().append(skillDiv);
 
     $("#skillDiv").append(HTMLskillsStart);
-    bio.skills.forEach(function(e,i,a){
-        var skill = HTMLskills.replace("%data%", e);
-        $("#skills").append(skill);
-    });
+    if(bio.skills.length > 0) {
+        bio.skills.forEach(function(e,i,a){
+            var skill = HTMLskills.replace("%data%", e);
+            $("#skills").append(skill);
+       });
+    }
 
     Object.keys(bio.contact).forEach(function(e,i,a) {
         if (e === "email")
@@ -83,7 +150,6 @@
 
     $("#header").prepend(formattedRole).prepend(formattedName);
     $("#header").prepend(HTMLbioPic.replace("%data%", bio.pic));
-
 
     if(document.getElementsByClassName('flex-item').length === 0) {
       document.getElementById('topContacts').style.display = 'none';
